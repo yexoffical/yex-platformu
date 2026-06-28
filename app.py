@@ -23,9 +23,11 @@ ozel_chatler = {} # İki kişilik mesajlaşmalar için
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route('/')
+# TAMİR EDİLEN BÖLÜM: HEAD hatasını engelleyen ve Render kontrolünü çözen ana sayfa rotası
+@app.route('/', methods=['GET', 'HEAD'])
 def ana_sayfa():
-    # Sayfa açılırken twitleri, videoları ve chatleri gönderiyoruz
+    if request.method == 'HEAD':
+        return '', 200
     return render_template('index.html', twitler=twitler, videolar=videolar, genel_chat=genel_chat)
 
 @app.route('/twit-ekle', methods=['POST'])
