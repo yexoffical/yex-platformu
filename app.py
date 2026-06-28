@@ -1,14 +1,13 @@
 import os
 from flask import Flask, render_template, request, redirect, url_for
 
-ŞU_AN_Kİ_KLASÖR = os.path.dirname(os.path.abspath(__file__))
-TEMPLATES_KLASÖRÜ = os.path.join(ŞU_AN_Kİ_KLASÖR, 'templates')
-STATIC_KLASÖRÜ = os.path.join(ŞU_AN_Kİ_KLASÖR, 'static')
+app = Flask(__name__)
 
-app = Flask(__name__, template_folder=TEMPLATES_KLASÖRÜ, static_folder=STATIC_KLASÖRÜ)
+# Klasör yapılandırması
+UPLOAD_FOLDER = os.path.join('static', 'uploads')
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-os.makedirs(os.path.join(STATIC_KLASÖRÜ, 'uploads'), exist_ok=True)
-
+# Geçici veri tabanları
 twitler = [
     {"id": 1, "kullanici": "CaganEge", "icerik": "Yex Platformu artık canlıda!", "kategori": "eğlence"},
     {"id": 2, "kullanici": "YexBot", "icerik": "Korku, eğlence, aksiyon ve yaz burada!", "kategori": "korku"}
@@ -20,10 +19,7 @@ genel_chat = [{"kullanici": "Sistem", "mesaj": "Yex Genel Chat Odasına Hoş Gel
 def ana_sayfa():
     if request.method == 'HEAD':
         return '', 200
-    try:
-        return render_template('index.html', twitler=twitler, videolar=videolar, genel_chat=genel_chat)
-    except Exception as e:
-        return f"Arayüz yüklenirken hata oluştu! Lütfen 'templates/index.html' dosyanızı kontrol edin. Hata: {str(e)}", 500
+    return render_template('index.html', twitler=twitler, videolar=videolar, genel_chat=genel_chat)
 
 @app.route('/twit-ekle', methods=['POST'])
 def twit_ekle():
@@ -42,5 +38,7 @@ def genel_mesaj_gonder():
         genel_chat.append({"kullanici": kullanici, "mesaj": mesaj})
     return redirect(url_for('ana_sayfa'))
 
+# Bulut sunucuları için port ayarını dinamik alıyoruz
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
