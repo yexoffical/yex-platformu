@@ -1,0 +1,8 @@
+@app.route('/', methods=['GET', 'HEAD'])
+def ana_sayfa():
+    # Render'ın kontrol isteğine boş cevap dönüyoruz ki hata vermesin
+    if request.method == 'HEAD':
+        return '', 200
+        
+    # Sayfa normal açılırken twitleri, videoları ve chatleri gönderiyoruz
+    return render_template('index.html', twitler=twitler, videolar=videolar, genel_chat=genel_chat)
